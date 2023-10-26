@@ -2,8 +2,10 @@ const axios = require('axios');
 const crypto = require('crypto');
 const querystring = require('querystring');
 
+const HOST = "api.theta360devel.biz";
+
 async function getUserAccessKeyId(user_id) {
-  const url = `https://api.theta360devel.biz/authentications/${user_id}`;
+  const url = `https://${HOST}/authentications/${user_id}`;
   try {
     const response = await axios.get(url);
     if (response.status === 201) {
@@ -30,7 +32,7 @@ function generateSignature(method, host, path, user_secret_access_key, date) {
 }
 
 async function getTourById(tour_id, user_access_key_id, user_secret_access_key, custom_key = null) {
-  const HOST = "api.theta360devel.biz";
+
   const PATH = `/tours/${tour_id}`;
   const METHOD = "GET";
   const DATE = new Date().toUTCString();
@@ -63,7 +65,6 @@ async function getTourById(tour_id, user_access_key_id, user_secret_access_key, 
 }
 
 async function getListSpheres(user_access_key_id, user_secret_access_key) {
-  const HOST = "api.theta360devel.biz";
   const PATH = `/spheres`;
   const METHOD = "GET";
   const DATE = new Date().toUTCString();
@@ -90,13 +91,37 @@ async function getListSpheres(user_access_key_id, user_secret_access_key) {
   }
 }
 
+const getListTours = async (user_access_key_id, user_secret_access_key) => {
+  const PATH = `/tours`;
+  const METHOD = "GET";
+  const DATE = new Date().toUTCString();
+
+  const headers = {
+    'Authorization': `THETA360BIZ ${user_access_key_id}:${generateSignature(METHOD, HOST, PATH, user_secret_access_key, DATE)}`,
+    'Date': DATE,
+    'Content-Type': 'application/json'
+  };
+  try {
+    const { data } = await axios.get(`https://${HOST}${PATH}?startIndex=1&count=10`, { headers });
+    const { tours } = data
+    console.log(JSON.stringify(data, null, 2));
+  } catch (error) {
+    console.log("error", error.response)
+  }
+}
+
 setTimeout(async () => {
-  const TOUR_ID = "101Hav"
+  // const USER_ID = "rits1_user_access_id"
+  // const USER_SECRET_ACCESS_KEY = "rits1_secret_access_key"
+
+
   const USER_ID = "u4fUG4zjQh"
   const USER_SECRET_ACCESS_KEY = "QUXkD75ACe5txCesBajdyNwC3mFhww"
-  const userAccessKeyId = await getUserAccessKeyId(USER_ID, USER_SECRET_ACCESS_KEY)
 
+  const userAccessKeyId = await getUserAccessKeyId(USER_ID, USER_SECRET_ACCESS_KEY)
+  console.log('userAccessKeyId---', userAccessKeyId)
   if (userAccessKeyId) {
-    await getListSpheres(userAccessKeyId, USER_SECRET_ACCESS_KEY);
+    // await getTourById('101FA7', userAccessKeyId, USER_SECRET_ACCESS_KEY);
+    await getListTours(userAccessKeyId, USER_SECRET_ACCESS_KEY);
   }
 }, 0);

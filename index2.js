@@ -1,9 +1,10 @@
 const axios = require('axios');
 const crypto = require('crypto');
 const querystring = require('querystring');
+const HOST = "api.theta360devel.biz";
 
 async function getUserAccessKeyId(user_id, user_secret_access_key) {
-  const url = `https://api.theta360devel.biz/authentications/${user_id}`;
+  const url = `https://${HOST}/authentications/${user_id}`;
   const DATE = new Date().toUTCString();
   const signature = generateSignature("GET", "api.theta360devel.biz", `/authentications/${user_id}`, user_secret_access_key, DATE);
 
@@ -35,7 +36,6 @@ function generateSignature(method, host, path, user_secret_access_key, date) {
 }
 
 async function updateTour(tour_id, user_access_key_id, user_secret_access_key, custom_key, payload) {
-  const HOST = "api.theta360devel.biz";
   const PATH = `/tours/${tour_id}`;
   const METHOD = "PUT";
   const DATE = new Date().toUTCString();
@@ -65,27 +65,40 @@ async function updateTour(tour_id, user_access_key_id, user_secret_access_key, c
 
 const PUT_TOUR_PAYLOAD = {
   metadata: {},
-  scenes: [
+  "scenes": [
     {
-      sphere_id: "104gtp",
-      title: "new title",
-      first_view: { hlookat: "0.0", vlookat: "0.0", fov: "52.0" },
-      telops: [],
-      annotations: [
+      "sphere_id": "104ctQ",
+      "title": "エントランス",
+      "first_view": {
+        "hlookat": "0.0",
+        "vlookat": "0.0",
+        "fov": "52.0"
+      },
+      "telops": [
         {
-          hlookat: "-0.6410631253390306",
-          vlookat: "-2.1358426198382827",
-          plane_id: "",
-          text: "44432434",
-          video_uri: "",
-          icon: { type: "custom", plane_id: "100vKy" },
-        },
+          "text": "sample telop"
+        }
       ],
-      links: [],
-      children: [],
-      links: [],
-      children: [],
-    },
+      "annotations": [
+        {
+          "name": "scene_104ctQanno0",
+          "style": "annotation_style_video",
+          "crop": "0|0|45|45",
+          "disptype": "modal",
+          "hlookat": "0.0",
+          "vlookat": "0.0",
+          "plane_id": "",
+          "text": "<div>あああ<br>いいい</div>",
+          "video_uri": "https://www.youtube.com/watch?v=jfKfPfyJRdk",
+          "icon": {
+            "type": "video",
+            "plane_id": ""
+          }
+        }
+      ],
+      "links": [],
+      "children": []
+    }
   ],
   maps: [],
   bottom: { type: "playersetting" },
@@ -97,12 +110,10 @@ const PUT_TOUR_PAYLOAD = {
 setTimeout(async () => {
   const USER_ID = "u4fUG4zjQh"
   const USER_SECRET_ACCESS_KEY = "QUXkD75ACe5txCesBajdyNwC3mFhww"
-  const TOUR_ID = "101GCt"; // tour_id cần update
+  const TOUR_ID = "101F9C"; // tour_id cần update
   const CUSTOM_KEY = '';
   const userAccessKeyId = await getUserAccessKeyId(USER_ID, USER_SECRET_ACCESS_KEY)
   if (userAccessKeyId) {
-    await updateTour(TOUR_ID, userAccessKeyId, USER_SECRET_ACCESS_KEY, CUSTOM_KEY, {
-      // tham số cần update
-    })
+    await updateTour(TOUR_ID, userAccessKeyId, USER_SECRET_ACCESS_KEY, CUSTOM_KEY, PUT_TOUR_PAYLOAD)
   }
 }, 0);
